@@ -13,6 +13,14 @@ public class SimpleViewPoint implements ViewPoint {
     private Position position;
     private static final Map<Position, Obstacle> obstacles = new HashMap<>();
 
+    public Heading getHeading() {
+        return heading;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
     public SimpleViewPoint(String facing, int x, int y) {
         this(Heading.of(facing), new Position(x, y));
     }

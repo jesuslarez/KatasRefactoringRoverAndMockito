@@ -14,6 +14,10 @@ public class Rover {
 
     private ViewPoint viewPoint;
 
+    public ViewPoint getViewPoint() {
+        return viewPoint;
+    }
+
     public Rover(ViewPoint viewPoint) {
         this.viewPoint = viewPoint;
     }
