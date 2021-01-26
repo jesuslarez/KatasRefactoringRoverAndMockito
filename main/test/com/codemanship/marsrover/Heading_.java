@@ -10,33 +10,33 @@ public class Heading_ {
 
 	@Test
 	public void should_be_created_from_string() {
-		assertEquals(North, Heading.of("N"));
-		assertEquals(South, Heading.of("S"));
-		assertEquals(East, Heading.of("E"));
-		assertEquals(West, Heading.of("W"));
+		assertEquals(NORTH, Heading.of("N"));
+		assertEquals(SOUTH, Heading.of("S"));
+		assertEquals(EAST, Heading.of("E"));
+		assertEquals(WEST, Heading.of("W"));
 	}
 
 	@Test
 	public void should_be_created_from_char() {
-		assertEquals(North, Heading.of('N'));
-		assertEquals(South, Heading.of('S'));
-		assertEquals(East, Heading.of('E'));
-		assertEquals(West, Heading.of('W'));
+		assertEquals(NORTH, Heading.of('N'));
+		assertEquals(SOUTH, Heading.of('S'));
+		assertEquals(EAST, Heading.of('E'));
+		assertEquals(WEST, Heading.of('W'));
 	}
 
 	@Test
 	public void should_be_able_turn_right() {
-		assertEquals(East, North.turnRight());
-		assertEquals(South, East.turnRight());
-		assertEquals(West, South.turnRight());
-		assertEquals(North, West.turnRight());
+		assertEquals(EAST, NORTH.turnRight());
+		assertEquals(SOUTH, EAST.turnRight());
+		assertEquals(WEST, SOUTH.turnRight());
+		assertEquals(NORTH, WEST.turnRight());
 	}
 
 	@Test
 	public void should_be_able_turn_left() {
-		assertEquals(West, North.turnLeft());
-		assertEquals(North, East.turnLeft());
-		assertEquals(East, South.turnLeft());
-		assertEquals(South, West.turnLeft());
+		assertEquals(WEST, NORTH.turnLeft());
+		assertEquals(NORTH, EAST.turnLeft());
+		assertEquals(EAST, SOUTH.turnLeft());
+		assertEquals(SOUTH, WEST.turnLeft());
 	}
 }
