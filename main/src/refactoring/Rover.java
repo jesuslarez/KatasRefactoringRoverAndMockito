@@ -1,19 +1,20 @@
 package refactoring;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Stream;
+
+import static java.util.Arrays.stream;
 
 public class Rover {
 
     private Heading heading;
     private Position position;
+    private static Map<Position, Obstacle> obstacles;
 
     public Rover(Heading heading, Position position) {
         this.heading = heading;
         this.position = position;
+        obstacles = new HashMap<>();
     }
 
     public Rover(String facing, int x, int y) {
@@ -32,17 +33,20 @@ public class Rover {
         return this.position;
     }
 
-    public void go(String instructions) {
-        Stream<Order> orders = Arrays.stream(instructions.split(""))
-                .map(Order::of)
-                .filter(Objects::nonNull);
-        orders.forEach(order -> actions.get(order).execute());
+    public void addObstacle(Obstacle obstacle) {
+        obstacles.put(obstacle.getPosition(), obstacle);
     }
 
     public void go(Order... orders) {
-        for (Order order : orders) {
-            actions.get(order).execute();
-        }
+        go(stream(orders));
+    }
+
+    private void go(Stream<Order> orders) {
+        orders.filter(Objects::nonNull).forEach(this::execute);
+    }
+
+    private void execute(Order order) {
+        actions.get(order).execute();
     }
 
     public static class Position {
@@ -55,13 +59,13 @@ public class Rover {
         }
 
         public Position forward(Heading heading) {
-            return new Position(this.x + dx(heading), this.y + dy(heading));
+            if (thereIsObstacleBefore(heading)) return this;
+            else return forwardPosition(heading);
         }
 
-        public Position back (Heading heading)
-        {
-            return new Position(this.x - dx(heading), this.y - dy(heading));
-
+        public Position backward(Heading heading) {
+            if (thereIsObstacleBehind(heading)) return this;
+            else return backwardPosition(heading);
         }
 
         private int dx(Heading heading) {
@@ -75,45 +79,59 @@ public class Rover {
             if (heading == Heading.SOUTH) return -1;
             return 0;
         }
+        private boolean thereIsObstacleBefore(Heading heading) {
+            return thereIsObstacle(forwardPosition(heading));
+        }
+
+        private boolean thereIsObstacleBehind(Heading heading) {
+            return thereIsObstacle(backwardPosition(heading));
+        }
+
+        private boolean thereIsObstacle(Position position) { return Rover.obstacles.containsKey(position); }
+
+        private Position forwardPosition(Heading heading) {
+            return new Position(this.x + dx(heading), this.y + dy(heading));
+        }
+
+        private Position backwardPosition(Heading heading){ return new Position(this.x - dx(heading), this.y - dy(heading)); }
+
 
         @Override
         public boolean equals(Object object) {
             return isSameClass(object) && equals((Position) object);
         }
+        private boolean equals(Position position) { return position == this || (x == position.x && y == position.y); }
 
-        private boolean equals(Position position) {
-            return position == this || (x == position.x && y == position.y);
-        }
-
-        private boolean isSameClass(Object object) {
-            return object != null && object.getClass() == Position.class;
-        }
+        private boolean isSameClass(Object object) { return object != null && object.getClass() == Position.class; }
 
         @Override
         public String toString() {
             return "Position{" + "x= " + x + ", y= " + y + '}';
         }
+        public int hashCode() { return Objects.hash(x, y); }
     }
 
-    Map<Order,Action> actions = new HashMap<>();
+    Map<Order, Action> actions = new HashMap<>();
+
     {
-        actions.put(Order.Forward, ()->position = position.forward(heading));
-        actions.put(Order.Backward, ()->position = position.backward(heading));
-        actions.put(Order.Left, ()->heading = heading.turnLeft());
-        actions.put(Order.Right, ()->heading = heading.turnRight());
+        actions.put(Order.Forward, () -> position = position.forward(heading));
+        actions.put(Order.Backward, () -> position = position.backward(heading));
+        actions.put(Order.Left, () -> heading = heading.turnLeft());
+        actions.put(Order.Right, () -> heading = heading.turnRight());
     }
 
     public enum Order {
-        FOWARD, BACKWARD, LEFT, RIGHT;
+        Forward, Backward, Left, Right;
 
         public static Order of(String instruction) {
-            if (instruction.equals("F")) return FOWARD;
-            if (instruction.equals("B")) return BACKWARD;
-            if (instruction.equals("L")) return LEFT;
-            if (instruction.equals("R")) return RIGHT;
+            if (instruction.equals("F")) return Forward;
+            if (instruction.equals("B")) return Backward;
+            if (instruction.equals("L")) return Left;
+            if (instruction.equals("R")) return Right;
             return null;
         }
     }
+
     @FunctionalInterface
     public interface Action {
         void execute();
