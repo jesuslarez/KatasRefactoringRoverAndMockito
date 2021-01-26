@@ -1,10 +1,9 @@
 package com.codemanship.marsrover;
 
 import org.junit.Test;
-import refactoring.Rover.Heading;
-
+import refactor.SimpleViewPoint.Heading;
 import static org.junit.Assert.assertEquals;
-import static refactoring.Rover.Heading.*;
+import static refactoring.SimpleViewPoint.Heading.*;
 
 public class Heading_ {
 
